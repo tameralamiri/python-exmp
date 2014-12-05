@@ -1,0 +1,28 @@
+
+As a maximum-length datagram protocol, packets sent on L2CAP connections have an upper size limit. Both devices at the endpoints of a 
+connection maintain an incoming maximum transmission unit (MTU), which specifies the maximum size packet can receive. If both parties adjust 
+their incoming MTU, then it is possible to raise the MTU of the entire connection beyond the 672 byte default up to 65535 bytes. It is also 
+possible, but uncommon, for the two devices to have different MTU values. In PyBluez, the set_l2cap_mtu method is used to adjust this value.
+
+
+l2cap_sock = bluetooth.BluetoothSocket( bluetooth.L2CAP )
+    .
+    . # connect the socket
+    .
+bluetooth.set_l2cap_mtu( l2cap_sock, 65535 )
+
+This method is fairly straightforward, and takes an L2CAP BluetoothSocket and a desired MTU as input. The incoming MTU is adjusted for the 
+specified socket, and no other sockets are affected. As with all the other PyBluez methods, a failure is indicated by raising a 
+BluetoothException.
+
+
+Although we expressed reservations about using unreliable L2CAP channels in Section 3.3, there are cases in which an unreliable connection may 
+be desired. Adjusting the reliability semantics of a connection in PyBluez is also a simple task, and can be done with the set_packet_timeout 
+method
+
+
+bluetooth.set_packet_timeout( bdaddr, timeout )
+set_packet_timeout takes a Bluetooth address and a timeout, specified in milliseconds, as input and tries to adjust the packet timeout for any 
+L2CAP and RFCOMM connections to that device. The process must have superuser privileges, and there must be an active connection to the 
+specified address. The effects of adjusting this parameter will last as long as any active connections are open, including those which outlive 
+the Python program.
